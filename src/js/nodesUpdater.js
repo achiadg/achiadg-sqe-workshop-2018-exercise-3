@@ -62,7 +62,10 @@ function handleBlockStatement(expression) {
 }
 
 function handleVariableDeclaration(expression) {
-    return getLabelFromNode(expression.declarations[0].id) + ' = ' + getLabelFromNode(expression.declarations[0].init);
+    if(expression.declarations[0].init === null)
+        return getLabelFromNode(expression.declarations[0].id);
+    else
+        return getLabelFromNode(expression.declarations[0].id) + ' = ' + getLabelFromNode(expression.declarations[0].init);
 }
 
 function handleExpressionStatement(expression){
