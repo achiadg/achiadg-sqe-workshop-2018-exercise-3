@@ -31,23 +31,35 @@ function makeGraphMerged(graph) {
 
 function mergeAllRelevantNodes(graph) {
     let i;
+    let deleteIndexex = [];
+    let min = graph[2].length;
     for(i=0;i<graph[2].length;i++){
         if(graph[2][i].normal && graph[2][i].normal.normal && graph[2][i].normal.prev.length === 1){
-            changeNodePointers(graph[2][i]);
-            delete graph[2][i];
+            if(i < min){
+                min = i;
+            }
+            changeNodePointers(graph[2][min], graph[2][i]);
+            deleteIndexex.push(i);
+            //delete graph[2][i];
         }
+        else{
+            min = graph[2].length;
+        }
+    }
+    for(i=0;i<deleteIndexex.length;i++){
+        delete graph[2][deleteIndexex[i]];
     }
     return graph;
 }
 
-function changeNodePointers(node) {
+function changeNodePointers(prev, node) {
     node.normal.label = node.label + '\n' + node.normal.label;
-    for(let j=0;j< node.prev.length;j++) {
-        if(node.prev[j].normal)
-            node.prev[j].normal = node.normal;
-        else if(node.prev[j].true === node)
-            node.prev[j].true = node.normal;
+    for(let j=0;j< prev.prev.length;j++) {
+        if(prev.prev[j].normal)
+            prev.prev[j].normal = node.normal;
+        else if(prev.prev[j].true)
+            prev.prev[j].true = node.normal;
         else
-            node.prev[j].false = node.normal;
+            prev.prev[j].false = node.normal;
     }
 }
