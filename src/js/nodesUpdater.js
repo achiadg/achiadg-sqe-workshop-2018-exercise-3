@@ -1,101 +1,114 @@
-export {createLabelsInNodes};
+export {createLabelsInNodes,stringAfterChanges};
+var stringAfterChanges = '';
+var temp = [];
 
-function createLabelsInNodes(cfg) {
+function createLabelsInNodes(cfg,strOfParamsAndValues) {
+    stringAfterChanges = strOfParamsAndValues;
+    temp = [];
     for(let node of cfg[2]){
-        node.label = getLabelFromNode(node.astNode);
+        node.label = getLabelFromNode(node.astNode,stringAfterChanges);
+    }
+    let length = temp.length;
+    length = length/2;
+    for(let i=1; i<=length;i++){
+        stringAfterChanges = stringAfterChanges + temp[i-1];
     }
     return cfg;
 }
 
-function getLabelFromNode(expression) {
+function getLabelFromNode(expression,stringAfterChanges) {
     if (expression === null || expression === undefined)
         return '';
     else if(expression.type === 'BlockStatement')
-        return handleBlockStatement(expression);
+        return handleBlockStatement(expression,stringAfterChanges);
     else if(expression.type === 'VariableDeclaration')
-        return handleVariableDeclaration(expression);
+        return handleVariableDeclaration(expression,stringAfterChanges);
     else
-        return handleMoreStatements(expression);
+        return handleMoreStatements(expression,stringAfterChanges);
 }
 
-function handleMoreStatements(expression) {
+function handleMoreStatements(expression,stringAfterChanges) {
     if(expression.type === 'ExpressionStatement')
-        return handleExpressionStatement(expression);
+        return handleExpressionStatement(expression,stringAfterChanges);
     else if(expression.type === 'AssignmentExpression')
-        return handleAssignmentStatement(expression);
+        return handleAssignmentStatement(expression,stringAfterChanges);
     else if(expression.type === 'ReturnStatement')
-        return handleReturnStatement(expression);
+        return handleReturnStatement(expression,stringAfterChanges);
     else if(expression.type === 'MemberExpression')
-        return handleMemberExpression(expression);
+        return handleMemberExpression(expression,stringAfterChanges);
     else
-        return handleMoreStatements2(expression);
+        return handleMoreStatements2(expression,stringAfterChanges);
 }
 
-function handleMoreStatements2(expression){
+function handleMoreStatements2(expression,stringAfterChanges){
     if (expression.type === 'BinaryExpression')
-        return handleBinaryExpression(expression);
+        return handleBinaryExpression(expression,stringAfterChanges);
     else if(expression.type === 'UnaryExpression')
-        return handleUnaryExpression(expression);
+        return handleUnaryExpression(expression,stringAfterChanges);
     else if(expression.type === 'ArrayExpression')
-        return handleArrayExpression(expression);
+        return handleArrayExpression(expression,stringAfterChanges);
     else if(expression.type === 'Literal')
-        return handleLiteral(expression);
+        return handleLiteral(expression,stringAfterChanges);
     else
-        return handleMoreStatements3(expression);
+        return handleMoreStatements3(expression,stringAfterChanges);
 }
 
-function handleMoreStatements3(expression) {
+function handleMoreStatements3(expression,stringAfterChanges) {
     if (expression.type === 'Identifier')
-        return handleIdentifier(expression);
+        return handleIdentifier(expression,stringAfterChanges);
     else if(expression.type === 'UpdateExpression')
-        return handleUpdateExpression(expression);
+        return handleUpdateExpression(expression,stringAfterChanges);
 
 }
 
-function handleBlockStatement(expression) {
+function handleBlockStatement(expression,stringAfterChanges) {
     let result = '';
     let i;
     for(i=0;i<expression.body.length;i++){
-        result = result + getLabelFromNode(expression.body[i])+'\n';
+        result = result + getLabelFromNode(expression.body[i],stringAfterChanges)+'\n';
     }
     return result;
 }
 
-function handleVariableDeclaration(expression) {
-    if(expression.declarations[0].init === null)
-        return getLabelFromNode(expression.declarations[0].id);
-    else
-        return getLabelFromNode(expression.declarations[0].id) + ' = ' + getLabelFromNode(expression.declarations[0].init);
+function handleVariableDeclaration(expression,stringAfterChanges) {
+    if(expression.declarations[0].init === null) {
+        temp.push('let ' + getLabelFromNode(expression.declarations[0].id,stringAfterChanges) + ';\n');
+        return getLabelFromNode(expression.declarations[0].id,stringAfterChanges);
+    }
+    else{
+        temp.push('let ' + getLabelFromNode(expression.declarations[0].id,stringAfterChanges) + ' = ' + getLabelFromNode(expression.declarations[0].init,stringAfterChanges) + ';\n');
+        return getLabelFromNode(expression.declarations[0].id,stringAfterChanges) + ' = ' + getLabelFromNode(expression.declarations[0].init,stringAfterChanges);
+    }
 }
 
-function handleExpressionStatement(expression){
-    return getLabelFromNode(expression.expression);
+function handleExpressionStatement(expression,stringAfterChanges){
+    return getLabelFromNode(expression.expression,stringAfterChanges);
 }
 
-function handleAssignmentStatement(expression) {
-    return getLabelFromNode(expression.left) + ' = ' + getLabelFromNode(expression.right);
+function handleAssignmentStatement(expression,stringAfterChanges) {
+    return getLabelFromNode(expression.left,stringAfterChanges) + ' = ' + getLabelFromNode(expression.right,stringAfterChanges);
 }
 
-function handleReturnStatement(expression) {
-    return 'return ' + getLabelFromNode(expression.argument);
+function handleReturnStatement(expression,stringAfterChanges) {
+    return 'return ' + getLabelFromNode(expression.argument,stringAfterChanges);
 }
 
-function handleMemberExpression(expression){
-    return expression.object.name + '[' + getLabelFromNode(expression.property) + ']';
+function handleMemberExpression(expression,stringAfterChanges){
+    return expression.object.name + '[' + getLabelFromNode(expression.property,stringAfterChanges) + ']';
 }
 
-function handleBinaryExpression(expression) {
-    return getLabelFromNode(expression.left) + ' ' + expression.operator + ' ' + getLabelFromNode(expression.right);
+function handleBinaryExpression(expression,stringAfterChanges) {
+    return getLabelFromNode(expression.left,stringAfterChanges) + ' ' + expression.operator + ' ' + getLabelFromNode(expression.right,stringAfterChanges);
 }
 
-function handleUnaryExpression(expression) {
-    return expression.operator + getLabelFromNode(expression.argument);
+function handleUnaryExpression(expression,stringAfterChanges) {
+    return expression.operator + getLabelFromNode(expression.argument,stringAfterChanges);
 }
 
-function handleArrayExpression(expression) {
+function handleArrayExpression(expression,stringAfterChanges) {
     let tmp = [];
     for(let i=0;i<expression.elements.length;i++){
-        tmp.push(getLabelFromNode(expression.elements[i]));
+        tmp.push(getLabelFromNode(expression.elements[i],stringAfterChanges));
     }
     let result = '[';
     let i;
@@ -114,10 +127,10 @@ function handleIdentifier(expression) {
     return expression.name;
 }
 
-function handleUpdateExpression(expression) {
+function handleUpdateExpression(expression,stringAfterChanges) {
     if(expression.prefix){
-        return expression.operator + getLabelFromNode(expression.argument);
+        return expression.operator + getLabelFromNode(expression.argument,stringAfterChanges);
     }else{
-        return getLabelFromNode(expression.argument) + expression.operator;
+        return getLabelFromNode(expression.argument,stringAfterChanges) + expression.operator;
     }
 }

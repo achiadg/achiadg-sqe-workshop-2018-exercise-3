@@ -1,4 +1,4 @@
-export {parseArgs};
+export {parseArgs,createStringOfDeclerations};
 var i = 0;
 
 function parseArgs(valueOfAllArgs) {
@@ -54,3 +54,12 @@ function checkIfCanAddToResult(argsText , argsVals) {
     return argsVals;
 }
 
+function createStringOfDeclerations(args,params) {
+    let res = '';
+    let j = 0;
+    for(let p of params){
+        res = res + 'var ' + p.name + ' = ' + args[j] + ';\n';
+        j++;
+    }
+    return res;
+}

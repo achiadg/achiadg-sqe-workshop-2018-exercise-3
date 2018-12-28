@@ -1,8 +1,8 @@
 export {createGraphNodesLabels , makeGraphFine , makeGraphMerged};
 import {createLabelsInNodes} from './nodesUpdater';
 
-function createGraphNodesLabels(cfg) {
-    return createLabelsInNodes(cfg);
+function createGraphNodesLabels(cfg,strOfParamsAndValues) {
+    return createLabelsInNodes(cfg,strOfParamsAndValues);
 }
 
 function makeGraphFine(graph) {
