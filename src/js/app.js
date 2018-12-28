@@ -9,7 +9,7 @@ import $ from 'jquery';
 
 $(document).ready(function () {
     $('#codeSubmissionButton').click(() => {
-        document.getElementById('chart').innerHTML = "";
+        document.getElementById('chart').innerHTML = '';
         let codeToParse = $('#inputPlaceHolder').val();
         let parsedCode = parseCode(codeToParse);
         $('#outputCFG').empty();
