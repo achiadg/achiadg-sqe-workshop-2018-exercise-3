@@ -1,4 +1,4 @@
-export {createGraphFromStr};
+export {createGraphFromStr,checkIfCondExist,checkExist};
 import {indexesToPrint} from './evaluator';
 var condElements = [];
 var countNodes = 1;
@@ -13,11 +13,45 @@ function createGraphFromStr(graphInStr) {
     additionalNodes = 1;
     moreTransitions = '';
     let graphElements = graphInStr.split(']\n');
+    graphElements = checkGraphElements(graphElements);
     graphElements = checkComplexity(graphElements);
     let res2 = handleTrans(graphElements);
     let res1 = handleNodes(graphElements);
     let result = res1 + '\n' + res2 + '\n';
     return result;
+}
+
+function checkGraphElements(graphElements) {
+    let indexes = [];
+    for(let i = 0; i<graphElements.length;i++){
+        if(checkElement(graphElements[i])){
+            indexes.push(i);
+        }
+    }
+    for(let i = 0; i<graphElements.length - 1;i++){
+        if(indexes.includes(i+1)){
+            graphElements[i] = graphElements[i] + ']\n' + graphElements[i+1];
+        }
+    }
+    return deleteRelevantNodes(indexes,graphElements);
+}
+
+function deleteRelevantNodes(indexes,graphElements) {
+    let result = [];
+    for(let i = 0; i<graphElements.length;i++){
+        if(!indexes.includes(i)){
+            result.push(graphElements[i]);
+        }
+    }
+    return result;
+}
+
+function checkElement(element) {
+    if(!element.includes('label') && !checkExist(element) && element !== ''){
+        return true;
+    }else{
+        return false;
+    }
 }
 
 function handleNodes(graphElements) {
@@ -41,7 +75,7 @@ function checkExist(element) {
 }
 
 function handleRelevantElementNode(element) {
-    let name = element.split('[');
+    let name = findFirstOpenBrackets(element);
     let result = '';
     let nameOfNode = name[0].substring(0,name[0].length-1);
     let numOfNode = nameOfNode.substr(1);
@@ -55,6 +89,22 @@ function handleRelevantElementNode(element) {
     else
         result = nameOfNode + '=>' + type + ': ' + 'node-number: ' + countNodes + '\n' + splitByEqual[1].substring(0,splitByEqual[1].length-1) + '\n';
     return result;
+}
+
+function findFirstOpenBrackets(element) {
+    let i = 0;
+    let res1 = '';
+    let res2 = '';
+    while(i <element.length && element[i] !== '['){
+        res1 = res1 + element[i];
+        i++;
+    }
+    i++;
+    while(i <element.length){
+        res2 = res2 + element[i];
+        i++;
+    }
+    return[res1,res2];
 }
 
 function checkIfnumOfNodeIsGreen(numOfNode) {

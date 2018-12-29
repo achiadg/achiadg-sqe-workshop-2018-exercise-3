@@ -5,7 +5,12 @@ var indexesToPrint = [];
 function getNodesToPrint(graph,strOfDeclarations) {
     indexesToPrint = [];
     graph = graph[2];
+    if(strOfDeclarations.includes('undefined'))
+        return;
     getNodesToPrintHelp(graph,graph[0],strOfDeclarations);
+    indexesToPrint = indexesToPrint.filter(function(item, pos) {
+        return indexesToPrint.indexOf(item) == pos;
+    });
 }
 
 function splitByBackslashN(nodeToSplit) {

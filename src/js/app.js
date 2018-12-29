@@ -24,8 +24,8 @@ $(document).ready(function () {
         let graphAfterMerged = makeGraphMerged(graphAfterClean);
         getNodesToPrint(graphAfterMerged,stringAfterChanges);
         const cfgInStringOrient = esgraph.dot(graphAfterMerged);
-        $('#outputCFG').val(cfgInStringOrient);
         let graphToShow = createGraphFromStr(cfgInStringOrient);
+        $('#outputCFG').val(graphToShow);
         showGraph(graphToShow);
     });
 });
@@ -34,3 +34,4 @@ function showGraph(graphToShow) {
     let afterFlowChart = flowchart.parse(graphToShow);
     afterFlowChart.drawSVG('chart',configs);
 }
+
