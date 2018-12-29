@@ -25,7 +25,6 @@ $(document).ready(function () {
         getNodesToPrint(graphAfterMerged,stringAfterChanges);
         const cfgInStringOrient = esgraph.dot(graphAfterMerged);
         let graphToShow = createGraphFromStr(cfgInStringOrient);
-        $('#outputCFG').val(graphToShow);
         showGraph(graphToShow);
     });
 });
